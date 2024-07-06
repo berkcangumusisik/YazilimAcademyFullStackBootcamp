@@ -1,0 +1,22 @@
+﻿@page "/"
+
+<PageTitle>Home</PageTitle>
+
+
+
+@if (isLoading)
+{
+    <h2>Loading 🔥</h2>
+}
+else
+{
+    <h1>@userName.ToLowerInvariant()</h1>
+}
+
+
+
+@code{
+
+    private string userName = "Berkcan Gümüşışık";
+    private bool isLoading = false;
+}
