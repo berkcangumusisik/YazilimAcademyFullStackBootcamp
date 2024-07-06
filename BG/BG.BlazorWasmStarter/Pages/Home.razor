@@ -2,7 +2,17 @@
 
 <PageTitle>Home</PageTitle>
 
+<button class="btn btn-success mb-3" @onmouseenter="HandleChangeLoadingButtonClick"  @onclick="HandleChangeLoadingButtonClick">Change Loading</button>
 
+<h2 class="@(isCompany ? "text-info" : "text-danger")">TC Kimlik No</h2>
+@if (isCompany)
+{
+    <h2 class="text-info">Vergi Kimlik No</h2>
+}
+else
+{
+    <h2 class="text-danger">TC Kimlik No</h2>
+}
 
 @if (isLoading)
 {
@@ -19,4 +29,16 @@ else
 
     private string userName = "Berkcan Gümüşışık";
     private bool isLoading = false;
+    private bool isCompany = false;
+
+    private void HandleChangeLoadingButtonClick()
+    {
+        isLoading = !isLoading;
+        isCompany = !isCompany;
+    }
 }
+
+<!--
+    Blazor'da eventlar ile state güncellemesi yapılabilir. Mesela bir butona tıklanınca isLoading değeri true olacak şekilde güncellenebilir.
+    Bunu yapabilmek için @onclick="HandleChangeLoadingButtonClick" şeklinde bir event tanımlanır ve HandleChangeLoadingButtonClick adında bir metot oluşturulur. 
+-->
