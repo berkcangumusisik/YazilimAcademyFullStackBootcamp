@@ -1,44 +1,23 @@
 ﻿@page "/"
 
 <PageTitle>Home</PageTitle>
+<p class="mb-1">@password</p>
+<input type="text" class="form-control" @bind="password"  @bind:event="oninput"/>
 
-<button class="btn btn-success mb-3" @onmouseenter="HandleChangeLoadingButtonClick"  @onclick="HandleChangeLoadingButtonClick">Change Loading</button>
+<p class="mb-1 mt-3">@passwordLength</p>
 
-<h2 class="@(isCompany ? "text-info" : "text-danger")">TC Kimlik No</h2>
-@if (isCompany)
+<input type="range" class="form-range" step="1" min="6" max="30" @bind="passwordLength" @bind:event="oninput" />
+@code
 {
-    <h2 class="text-info">Vergi Kimlik No</h2>
-}
-else
-{
-    <h2 class="text-danger">TC Kimlik No</h2>
-}
-
-@if (isLoading)
-{
-    <h2>Loading 🔥</h2>
-}
-else
-{
-    <h1>@userName.ToLowerInvariant()</h1>
-}
-
-
-
-@code{
-
-    private string userName = "Berkcan Gümüşışık";
-    private bool isLoading = false;
-    private bool isCompany = false;
-
-    private void HandleChangeLoadingButtonClick()
-    {
-        isLoading = !isLoading;
-        isCompany = !isCompany;
-    }
+    private string password = string.Empty; 
+    private int passwordLength = 6;
 }
 
 <!--
-    Blazor'da eventlar ile state güncellemesi yapılabilir. Mesela bir butona tıklanınca isLoading değeri true olacak şekilde güncellenebilir.
-    Bunu yapabilmek için @onclick="HandleChangeLoadingButtonClick" şeklinde bir event tanımlanır ve HandleChangeLoadingButtonClick adında bir metot oluşturulur. 
+    @bind ile input elementine bir property bağlanabilir. Bu sayede input elementine girilen değer property üzerinden okunabilir ve güncellenebilir.
+    @bind:event="oninput" şeklinde bir kullanım ile input elementine girilen değer password property'sine bağlanır ve password property'si güncellendiğinde input elementi de güncellenir.
+    step ile input elementine girilebilecek değerlerin aralığı belirlenebilir.
+    min ve max ile input elementine girilebilecek minimum ve maksimum değerler belirlenebilir.
+    passwordLength property'si 6 değeri ile başlatılır.
+    passwordLength property'si 6 ile 30 arasında bir değer alabilir.
 -->

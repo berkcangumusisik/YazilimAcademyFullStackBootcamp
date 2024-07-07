@@ -23,4 +23,6 @@ await builder.Build().RunAsync();
  * Önce proje dizinine gitmemiz gerekiyor. Ardýndan terminal ekranýna dotnet watch run yazarak projeyi çalýþtýrabiliriz.
  * dotnet watch run : Uygulamayý çalýþtýrýr ve deðiþiklikleri izler. Bir deðiþiklik algýlandýðýnda, uygulamayý yeniden derler ve çalýþtýrýr. Bu, uygulamanýn geliþtirme sürecinde kullanýþlýdýr.
  * Sayfa deðiþtiði zaman sadece deðiþen kýsmý yükler. Bu sayede sayfa geçiþleri daha hýzlý olur.
+ *
+
  */
