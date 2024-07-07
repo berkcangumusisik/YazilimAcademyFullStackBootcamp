@@ -1,16 +1,108 @@
 ﻿@page "/"
+@using System.Text
 
 <PageTitle>Home</PageTitle>
-<p class="mb-1">@password</p>
-<input type="text" class="form-control" @bind="password"  @bind:event="oninput"/>
-
-<p class="mb-1 mt-3">@passwordLength</p>
-
-<input type="range" class="form-range" step="1" min="6" max="30" @bind="passwordLength" @bind:event="oninput" />
+<div class="input-group mb-3">
+    <input @bind="password" readonly="readonly" type="text" class="form-control">
+    <span @onmouseenter="@(() => OnEmojiHover("copy"))" @onmouseleave="@OnEmojiMouseLeft" class="input-group-text my-clickable-button @onHoverCopyCss" id="basic-addon1">📄</span>
+    <span @onclick="HandleGeneratePasswordClick" @onmouseenter="@(() => OnEmojiHover("generate"))" @onmouseleave="@OnEmojiMouseLeft" class="input-group-text my-clickable-button @onHoverGenerateCss" id="basic-addon2">🔄</span>
+    <span @onclick ="HandleSavePasswordClick"@onmouseenter="@(() => OnEmojiHover("save"))" @onmouseleave="@OnEmojiMouseLeft" class="input-group-text my-clickable-button @onHoverSaveCss" id="basic-addon3">💾</span>
+</div>
+<div class="card mt-3">
+    <div class="card-header">
+        💾 Saved Passwords
+    </div>
+    <div class="card-body">
+        <ul class="list-group">
+            @foreach (var savedPassword in savedPasswords)
+            {
+                <li class="list-group-item">@savedPassword</li>
+            }
+        </ul>
+    </div>
+</div>
 @code
 {
     private string password = string.Empty; 
     private int passwordLength = 6;
+    private HashSet<string> savedPasswords = [];
+
+    private string onHoverCopyCss = string.Empty;
+    private string onHoverGenerateCss = string.Empty;
+    private string onHoverSaveCss = string.Empty;
+
+    private static Random random = new Random();
+    private static StringBuilder stringBuilder = new StringBuilder();
+    private bool includeLowercase = true;
+    private bool includeUppercase = true;
+    private bool includeNumbers = true;
+    private bool includeSpecialCharacters = true;
+
+    private const string lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
+    private const string upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private const string numbers = "0123456789";
+    private const string specialCharacters = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+    
+    private void HandleSavePasswordClick()
+    {
+        if(string.IsNullOrEmpty(password) || savedPasswords.Any(x =>x == password))
+            return;
+        savedPasswords.Add(password);
+    }
+
+
+    private void HandleGeneratePasswordClick()
+    {
+        stringBuilder.Clear();
+        var validChars = new StringBuilder();
+        if (includeLowercase)
+            validChars.Append(lowerCaseLetters);
+        if (includeUppercase)
+            validChars.Append(upperCaseLetters);
+        if (includeNumbers)
+            validChars.Append(numbers);
+        if (includeSpecialCharacters)
+            validChars.Append(specialCharacters);
+        
+
+
+        
+        for (int i = 0; i < passwordLength; i++)
+        {
+            var randomIndex = random.Next(0, validChars.Length);
+            stringBuilder.Append(validChars[randomIndex]);
+        }
+
+        password = stringBuilder.ToString();
+
+    }
+    private void OnEmojiHover(string iconType)
+    {
+        switch (iconType)
+        {
+            case "copy":
+                onHoverCopyCss = "bg-primary";
+                break;
+
+            case "generate":
+                onHoverGenerateCss = "bg-primary";
+                break;
+
+            case "save":
+                onHoverSaveCss = "bg-primary";
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private void OnEmojiMouseLeft()
+    {
+        onHoverCopyCss = string.Empty;
+        onHoverGenerateCss = string.Empty;
+        onHoverSaveCss = string.Empty;
+    }
 }
 
 <!--
@@ -20,4 +112,8 @@
     min ve max ile input elementine girilebilecek minimum ve maksimum değerler belirlenebilir.
     passwordLength property'si 6 değeri ile başlatılır.
     passwordLength property'si 6 ile 30 arasında bir değer alabilir.
+     @(()=>) şeklinde bir kullanım ile bir method çağrılabilir. Özellikle bir event tetiklendiğinde bir method çağrılacaksa bu şekilde bir kullanım yapılabilir. Parametre alan bir method çağrılacaksa bu şekilde bir kullanım yapılabilir.
+     
+     .Any() methodu bir koleksiyon üzerinde belirli bir koşulu sağlayan eleman olup olmadığını kontrol eder. Eğer koleksiyon içerisinde belirli bir koşulu sağlayan eleman varsa true döner. Aksi halde false döner.
+     .Exists() methodu bir koleksiyon üzerinde belirli bir koşulu sağlayan eleman olup olmadığını kontrol eder. Eğer koleksiyon içerisinde belirli bir koşulu sağlayan eleman varsa true döner. Aksi halde false döner.
 -->
