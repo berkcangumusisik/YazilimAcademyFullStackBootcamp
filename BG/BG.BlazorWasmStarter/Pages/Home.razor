@@ -1,13 +1,49 @@
 ﻿@page "/"
 @using System.Text
+@using BG.BlazorWasmStarter.Enums
 
 <PageTitle>Home</PageTitle>
-<div class="input-group mb-3">
-    <input @bind="password" readonly="readonly" type="text" class="form-control">
-    <span @onmouseenter="@(() => OnEmojiHover("copy"))" @onmouseleave="@OnEmojiMouseLeft" class="input-group-text my-clickable-button @onHoverCopyCss" id="basic-addon1">📄</span>
-    <span @onclick="HandleGeneratePasswordClick" @onmouseenter="@(() => OnEmojiHover("generate"))" @onmouseleave="@OnEmojiMouseLeft" class="input-group-text my-clickable-button @onHoverGenerateCss" id="basic-addon2">🔄</span>
-    <span @onclick ="HandleSavePasswordClick"@onmouseenter="@(() => OnEmojiHover("save"))" @onmouseleave="@OnEmojiMouseLeft" class="input-group-text my-clickable-button @onHoverSaveCss" id="basic-addon3">💾</span>
+
+
+<div class="card">
+    <div class="card-body">
+
+
+        <div class="input-group mb-3">
+            <input @bind="password" readonly="readonly" type="text" class="form-control">
+            <span @onmouseenter="@(() => OnEmojiHover("copy"))" @onmouseleave="@OnEmojiMouseLeft" class="input-group-text my-clickable-button @onHoverCopyCss" id="basic-addon2">📄</span>
+            <span @onclick="HandleGeneratePasswordClick" @onmouseenter="@(() => OnEmojiHover("generate"))" @onmouseleave="@OnEmojiMouseLeft" class="input-group-text my-clickable-button @onHoverGenerateCss" id="basic-addon3">🔄</span>
+            <span @onclick="HandleSavePasswordClick" @onmouseenter="@(() => OnEmojiHover("save"))" @onmouseleave="@OnEmojiMouseLeft" class="input-group-text my-clickable-button @onHoverSaveCss" id="basic-addon4">💾</span>
+        </div>
+
+        <div class="mb-3">
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" @bind="@includeNumbers" @oninput="@((args) => HandleCheckboxOnChange(args,CheckBoxActionType.Numbers))">
+                <label class="form-check-label">Numbers</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" @bind="@includeLowercase" @oninput="@((args) => HandleCheckboxOnChange(args,CheckBoxActionType.Lowercase))">
+                <label class="form-check-label">Lowercase</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" @bind="@includeUppercase" @oninput="@((args) => HandleCheckboxOnChange(args,CheckBoxActionType.Uppercase))">
+                <label class="form-check-label">Uppercase</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="checkbox" @bind="@includeSpecialChars" @oninput="@((args) => HandleCheckboxOnChange(args,CheckBoxActionType.SpecialChars))">
+                <label class="form-check-label">Special Chars</label>
+            </div>
+        </div>
+
+        <div>
+            <p class="mb-1 mt-3">Password Length: <b>@passwordLength</b></p>
+
+            <input type="range" class="form-range" step="1" min="8" max="50" @bind="passwordLength" @bind:event="oninput" />
+        </div>
+    </div>
 </div>
+
+
 <div class="card mt-3">
     <div class="card-header">
         💾 Saved Passwords
@@ -21,10 +57,12 @@
         </ul>
     </div>
 </div>
+
 @code
 {
-    private string password = string.Empty; 
-    private int passwordLength = 6;
+
+    private string password = string.Empty;
+    private int passwordLength = 12;
     private HashSet<string> savedPasswords = [];
 
     private string onHoverCopyCss = string.Empty;
@@ -33,66 +71,116 @@
 
     private static Random random = new Random();
     private static StringBuilder stringBuilder = new StringBuilder();
+
     private bool includeLowercase = true;
     private bool includeUppercase = true;
     private bool includeNumbers = true;
-    private bool includeSpecialCharacters = true;
+    private bool includeSpecialChars = true;
 
-    private const string lowerCaseLetters = "abcdefghijklmnopqrstuvwxyz";
-    private const string upperCaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private const string lowercaseLetters = "abcdefghijklmnopqrstuvwxyz";
+    private const string uppercaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private const string numbers = "0123456789";
-    private const string specialCharacters = "!@#$%^&*()_+-=[]{}|;:,.<>?";
-    
+    private const string specialCharacters = "!@#$%&*()_+-={};:?";
+
+    // allLowercaseLetters = "abcdefghijklmnopqrstuvwxyz";
+    // allUppercaseLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    // allNumbers = "0123456789";
+    // allSpecialCharacters = "!@#$%^&*()_+-=[]{}|;':,.<>?";
+    // Istanbul Lat/Long: 41.0082° N, 28.9784° E
+
+    protected override void OnInitialized()
+    {
+        GeneratePassword();
+
+        base.OnInitialized();
+    }
+
     private void HandleSavePasswordClick()
     {
-        if(string.IsNullOrEmpty(password) || savedPasswords.Any(x =>x == password))
+        if (string.IsNullOrEmpty(password) || savedPasswords.Any(x => x == password))
             return;
+
         savedPasswords.Add(password);
     }
 
+    private void HandleCheckboxOnChange(ChangeEventArgs args, CheckBoxActionType actionType)
+    {
+        if (args.Value is null)
+            return;
+
+        var result = actionType switch
+        {
+            CheckBoxActionType.SpecialChars => includeSpecialChars = (bool)args.Value,
+            CheckBoxActionType.Numbers => includeNumbers = (bool)args.Value,
+            CheckBoxActionType.Uppercase => includeUppercase = (bool)args.Value,
+            CheckBoxActionType.Lowercase => includeLowercase = (bool)args.Value,
+            _ => throw new ArgumentException("Geçersiz CheckBoxActionType", nameof(actionType))
+        };
+
+        GeneratePassword();
+    }
 
     private void HandleGeneratePasswordClick()
     {
+        GeneratePassword();
+    }
+
+    private void GeneratePassword()
+    {
         stringBuilder.Clear();
+
         var validChars = new StringBuilder();
+
+        // allLowercaseLetters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
         if (includeLowercase)
-            validChars.Append(lowerCaseLetters);
+            validChars.Append(lowercaseLetters);
+
         if (includeUppercase)
-            validChars.Append(upperCaseLetters);
+            validChars.Append(uppercaseLetters);
+
         if (includeNumbers)
             validChars.Append(numbers);
-        if (includeSpecialCharacters)
+
+        if (includeSpecialChars)
             validChars.Append(specialCharacters);
-        
+
+        if (!includeUppercase && !includeLowercase && !includeNumbers && !includeSpecialChars)
+        {
+            includeNumbers = true;
+            validChars.Append(numbers);
+        }
 
 
-        
         for (int i = 0; i < passwordLength; i++)
         {
             var randomIndex = random.Next(0, validChars.Length);
+
             stringBuilder.Append(validChars[randomIndex]);
+
         }
 
         password = stringBuilder.ToString();
-
     }
+
     private void OnEmojiHover(string iconType)
     {
         switch (iconType)
         {
             case "copy":
-                onHoverCopyCss = "bg-primary";
+                onHoverCopyCss = "bg-secondary";
                 break;
 
             case "generate":
-                onHoverGenerateCss = "bg-primary";
+                onHoverGenerateCss = "bg-secondary";
                 break;
 
             case "save":
-                onHoverSaveCss = "bg-primary";
+                onHoverSaveCss = "bg-secondary";
                 break;
 
             default:
+
                 break;
         }
     }
@@ -113,7 +201,7 @@
     passwordLength property'si 6 değeri ile başlatılır.
     passwordLength property'si 6 ile 30 arasında bir değer alabilir.
      @(()=>) şeklinde bir kullanım ile bir method çağrılabilir. Özellikle bir event tetiklendiğinde bir method çağrılacaksa bu şekilde bir kullanım yapılabilir. Parametre alan bir method çağrılacaksa bu şekilde bir kullanım yapılabilir.
-     
+
      .Any() methodu bir koleksiyon üzerinde belirli bir koşulu sağlayan eleman olup olmadığını kontrol eder. Eğer koleksiyon içerisinde belirli bir koşulu sağlayan eleman varsa true döner. Aksi halde false döner.
      .Exists() methodu bir koleksiyon üzerinde belirli bir koşulu sağlayan eleman olup olmadığını kontrol eder. Eğer koleksiyon içerisinde belirli bir koşulu sağlayan eleman varsa true döner. Aksi halde false döner.
 -->
