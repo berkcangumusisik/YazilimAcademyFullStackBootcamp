@@ -5,7 +5,7 @@ VisualStudioVersion = 17.10.34928.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BG.BlazorWasmStarter", "BG.BlazorWasmStarter\BG.BlazorWasmStarter.csproj", "{5B4BF7FF-66F3-42F3-93A4-8472B8F03F78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BG.BlazorOpenAIStarter", "BG.BlazorOpenAIStarter\BG.BlazorOpenAIStarter.csproj", "{8620A578-0AF1-4177-BE74-1C4B64C242BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BG.BlazorOpenAIStarter", "BG.BlazorOpenAIStarter\BG.BlazorOpenAIStarter.csproj", "{8620A578-0AF1-4177-BE74-1C4B64C242BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
