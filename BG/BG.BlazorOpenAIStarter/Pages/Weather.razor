@@ -47,8 +47,8 @@ else
         forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
     }
 
-    private void NavigateToChatGpt() => Navigation.NavigateTo("/chatgpt");
-    private void NavigateToDallE() => Navigation.NavigateTo("/dall-e");
+    private void NavigateToChatGpt() => Navigation.NavigateTo("models?modelName=chatgpt");
+    private void NavigateToDallE() => Navigation.NavigateTo("models?modelName=dall-e");
     // NavigateTo => Bize navigasyon işlemlerini yapmamızı sağlar.
     // => tek satırlık fonksiyon tanımlamak için kullanılır.
     // Birden fazla satırda işlem yapılacaksa {} kullanılır.
