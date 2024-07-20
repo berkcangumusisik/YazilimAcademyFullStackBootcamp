@@ -398,6 +398,4 @@ FodyWeavers.xsd
 *.sln.iml
 
 appsetting.json
-/BG/BG.BlazorOpenAIStarter/wwwroot/appsettings.json
-/BG/BG.BlazorOpenAIStarter/wwwroot/appsettings.json
 /BG/BG.BlazorGiftSuggestionApp/wwwroot/appsettings.json
