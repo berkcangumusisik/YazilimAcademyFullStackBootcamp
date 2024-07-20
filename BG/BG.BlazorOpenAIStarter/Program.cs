@@ -13,3 +13,7 @@ var openAIApiKey = builder.Configuration.GetSection("OpenAIApiKey").Value;
 builder.Services.AddOpenAIService(settings => settings.ApiKey = settings.ApiKey = openAIApiKey );
 
 await builder.Build().RunAsync();
+/*
+ npx tailwindcss -i .\Styles\app.css -o .\wwwroot\css\app.css --watch => Css çalýþtýrma
+ *
+ */
