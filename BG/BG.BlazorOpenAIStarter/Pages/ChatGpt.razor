@@ -1,4 +1,5 @@
 ﻿@page "/chatgpt"
+@using System.ComponentModel.DataAnnotations
 @using OpenAI.Interfaces
 @using OpenAI.ObjectModels
 @using OpenAI.ObjectModels.RequestModels
@@ -7,46 +8,65 @@
 <PageTitle>ChatGPT</PageTitle>
 
 <div class="container mx-auto p-4">
-    <div class="card bg-base-200 shadow-xl mb-8">
-        <div class="card-body">
-            <h2 class="card-title mb-4">Enter Your Prompt</h2>
-            <textarea @bind=@prompt class="textarea textarea-bordered w-full mb-4 transition-transform transform hover:scale-105" placeholder="Type your prompt here..."></textarea>
-            <div class="card-actions justify-end">
-                <button class="btn btn-primary btn-lg transition-transform transform hover:scale-110 shadow-lg" @onclick="GenerateAsync">Generate</button>
+    <div class="card bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 shadow-xl mb-8 text-white">
+        <EditForm Model="formModel" OnValidSubmit="@GenerateAsync" novalidate>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="mb-4 p-2 bg-red-200 text-red-700 rounded-md shadow-lg" />
+            <div class="card-body">
+                <h2 class="card-title mb-4 text-2xl font-bold">Enter Your Prompt</h2>
+                <InputTextArea @bind-Value="formModel.Prompt" class="textarea textarea-bordered w-full mb-4 transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-yellow-300 opacity-100" placeholder="Type your prompt here..."></InputTextArea>
+                <ValidationMessage class="text-red-200 bg-red-700 p-2 rounded-md mb-4 shadow-lg" For="@(() => formModel.Prompt)" />
+                <div class="card-actions justify-end">
+                    @if (isLoading)
+                    {
+                        <button disabled="disabled" class="m-1 animate-pulse rounded-md bg-gray-500 px-4 py-2 text-lg font-semibold text-white transition-transform transform hover:scale-110 shadow-lg">Loading...</button>
+                    }
+                    else
+                    {
+                        <button type="submit" class="m-1 animate-bounce rounded-md bg-yellow-500 px-4 py-2 text-lg font-semibold text-white transition-transform transform hover:scale-110 shadow-lg focus:outline-none focus:ring-4 focus:ring-yellow-300">Generate</button>
+                    }
+                </div>
             </div>
-        </div>
+        </EditForm>
     </div>
 
-    @if (!string.IsNullOrEmpty(generatedContent))
+    @if (isLoading)
     {
-        <div class="card bg-base-200 shadow-xl">
+        <div class="flex justify-center items-center h-64">
+            <span class="loading loading-spinner loading-lg text-yellow-500"></span>
+        </div>
+    }
+    else if (!string.IsNullOrEmpty(generatedContent))
+    {
+        <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
-                <h2 class="card-title mb-4">Generated Result</h2>
+                <h2 class="card-title mb-4 text-2xl font-bold text-white-800">Generated Result</h2>
                 <div class="bg-base-300 p-4 rounded-lg min-h-[100px]">
                     <pre><code class="text-base-content">
-                            @generatedContent
-                        </code></pre>
+                        @generatedContent
+                    </code></pre>
                 </div>
             </div>
         </div>
     }
 </div>
 
-@code
-{
-    private string prompt = string.Empty;
+@code {
+    private FormModel formModel = new();
     private string generatedContent = string.Empty;
+    private bool isLoading = false;
 
     private async Task GenerateAsync()
     {
         try
         {
+            isLoading = true;
             var completionResult = await OpenAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
             {
                 Messages = new List<ChatMessage>
-        {
+            {
                     ChatMessage.FromSystem("Sen şiir ve şarkı sözü yazmakta usta bir asistansın. Görevin, kullanıcıya şiir ve şarkı sözleri yazmakta yol göstermek, yardımcı olmak ve çözüm üretmektir."),
-                    ChatMessage.FromUser(prompt),
+                    ChatMessage.FromUser(formModel.Prompt),
                 },
                 Model = OpenAI.ObjectModels.Models.Gpt_4o,
                 MaxTokens = 4096,
@@ -62,5 +82,15 @@
             Console.WriteLine(e.ToString());
             throw;
         }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    protected class FormModel
+    {
+        [Required(ErrorMessage = "Prompt is required."), MinLength(5, ErrorMessage = "Prompt must be at least 5 characters long."), MaxLength(250, ErrorMessage = "Prompt must be no longer than 250 characters.")]
+        public string Prompt { get; set; } = string.Empty;
     }
 }
