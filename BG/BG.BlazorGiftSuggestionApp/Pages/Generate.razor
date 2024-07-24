@@ -1,0 +1,230 @@
+﻿@page "/generate"
+@using System.ComponentModel.DataAnnotations
+@using System.Text
+@using Markdig
+@using OpenAI.Interfaces
+@using OpenAI.ObjectModels
+@using OpenAI.ObjectModels.RequestModels
+@using BG.BlazorGiftSuggestionApp.Components
+@using BG.BlazorGiftSuggestionApp.Enums
+@inject IOpenAIService OpenAiService
+@inject IJSRuntime JSRuntime
+
+<PageTitle>AI-Powered Birthday Gift Finder</PageTitle>
+
+<div class="min-h-screen bg-gradient-to-br from-primary to-secondary text-primary-content">
+<div class="container mx-auto px-4 py-8">
+    <div class="flex flex-col lg:flex-row items-center justify-center gap-12">
+        <div class="text-center lg:text-left lg:w-1/2 animate__animated animate__fadeInLeft">
+            <h1 class="text-5xl font-extrabold mb-4">AI Gift Genius</h1>
+            <p class="text-xl mb-6">Discover the perfect birthday gift with the power of AI!</p>
+            <ul class="text-lg space-y-2 mb-8">
+                <li class="flex items-center"><svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Personalized Suggestions</li>
+                <li class="flex items-center"><svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Quick & Easy to Use</li>
+                <li class="flex items-center"><svg class="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>Budget-Friendly Options</li>
+            </ul>
+        </div>
+        <div class="card flex-shrink-0 w-full max-w-lg shadow-2xl bg-base-100">
+            <div class="card-body">
+                <h2 class="card-title text-2xl text-white font-bold text-center mb-6">Find the Perfect Gift</h2>
+                <EditForm Model="formModel" OnValidSubmit="HandleFormSubmit" class="space-y-4">
+                    <DataAnnotationsValidator />
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Relationship</span>
+                        </label>
+                        <InputSelect @bind-Value="formModel.Relationship" @oninput="HandleRelationshipChange" class="select select-bordered w-full text-white">
+                            <option value="">Select a Relationship</option>
+                            @foreach (var relationship in Enum.GetValues<RelationshipType>())
+                            {
+                                <option value="@relationship">@relationship</option>
+                            }
+                        </InputSelect>
+                        <ValidationMessage For="@(() => formModel.Relationship)" class="text-error text-sm mt-1" />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Gender</span>
+                        </label>
+                        <InputRadioGroup Name="genderInputGroup" @bind-Value="formModel.Gender">
+                            <div class="flex space-x-4">
+                                @foreach (var gender in Enum.GetValues<Gender>())
+                                {
+                                    <label class="label cursor-pointer">
+                                        <InputRadio Name="genderInputGroup" class="radio radio-primary" value="@gender" TValue="Gender" />
+                                        <span class="label-text ml-2">@gender.ToString()</span>
+                                    </label>
+                                }
+                            </div>
+                        </InputRadioGroup>
+                        <ValidationMessage For="@(() => formModel.Gender)" class="text-error text-sm mt-1" />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Age</span>
+                        </label>
+                        <InputNumber @bind-Value="formModel.Age" class="input input-bordered w-full text-white" placeholder="Enter age" />
+                        <ValidationMessage For="@(() => formModel.Age)" class="text-error text-sm mt-1" />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Hobbies</span>
+                        </label>
+                        <InputText @bind-Value="formModel.Hobbies" class="input input-bordered w-full text-white" placeholder="E.g. reading, cooking, sports" />
+                        <ValidationMessage For="@(() => formModel.Hobbies)" class="text-error text-sm mt-1" />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Budget in $</span>
+                        </label>
+                        <InputNumber @bind-Value="formModel.Budget" class="input input-bordered w-full text-white" placeholder="Enter budget" />
+                        <ValidationMessage For="@(() => formModel.Budget)" class="text-error text-sm mt-1" />
+                    </div>
+
+                    <div class="form-control mt-6">
+                        <button type="submit" class="btn btn-primary w-full" disabled="@isLoading">
+                            @if (isLoading)
+                            {
+                                <span class="loading loading-spinner loading-sm mr-2"></span>
+                            }
+                            Discover Perfect Gifts
+                        </button>
+                    </div>
+                </EditForm>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
+        @if (isLoading)
+{
+    <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate__animated animate__fadeIn">
+        <div class="bg-base-100 p-8 rounded-lg shadow-xl">
+            <div class="flex flex-col items-center">
+                <div class="loading loading-spinner loading-lg text-primary"></div>
+                <p class="mt-4 text-lg font-semibold">AI is crafting perfect gift ideas just for you...</p>
+            </div>
+        </div>
+    </div>
+}
+
+
+@code
+{
+    [CascadingParameter] public IModalService Modal { get; set; }
+    private bool isLoading = false;
+    private FormModel formModel = new FormModel();
+
+    private async Task HandleFormSubmit()
+    {
+        if (isLoading) return; // Prevent multiple submissions
+
+        try
+        {
+            isLoading = true;
+
+            BuildThePrompt();
+
+            var completionResult = await OpenAiService.ChatCompletion.CreateCompletion(new ChatCompletionCreateRequest
+            {
+                Messages = new List<ChatMessage>
+{
+                    ChatMessage.FromSystem(AssistantsPrompt),
+                    ChatMessage.FromUser(promptBuilder.ToString()),
+                },
+                Model = Models.Gpt_4o,
+            });
+            if (completionResult.Successful)
+            {
+                var gptContent = completionResult.Choices.First().Message.Content;
+
+                var pipeline = new MarkdownPipelineBuilder().UseBootstrap().Build();
+
+                var htmlContent = Markdown.ToHtml(gptContent, pipeline);
+
+                var parameters = new ModalParameters()
+                    .Add("GeneratedHtml", htmlContent);
+
+                Modal.Show<GiftResultsModal>(parameters);
+
+                // Handle the successful result (e.g., display suggestions)
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            // Handle the error (e.g., show error message to user)
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void HandleRelationshipChange(ChangeEventArgs args)
+    {
+
+
+        if (args.Value is null)
+            return;
+
+        var relationship = Enum.Parse<RelationshipType>(args.Value.ToString());
+
+        if (relationship == RelationshipType.Sister)
+            formModel.Gender = Gender.Female;
+
+        if (relationship == RelationshipType.Brother)
+            formModel.Gender = Gender.Male;
+
+    }
+
+    private static StringBuilder promptBuilder = new();
+
+    private void BuildThePrompt()
+    {
+        promptBuilder.Clear();
+
+        promptBuilder.AppendLine(PromptIntroductionText);
+
+        promptBuilder.AppendLine($"<Relationship>{formModel.Relationship}</Relationship>");
+
+        promptBuilder.AppendLine($"<Gender>{formModel.Gender}</Gender>");
+
+        promptBuilder.AppendLine($"<Age>{formModel.Age}</Age>");
+
+        promptBuilder.AppendLine($"<Hobbies>{formModel.Hobbies}</Hobbies>");
+
+        promptBuilder.AppendLine($"<BudgetInDollars>{formModel.Budget}</BudgetInDollars>");
+    }
+
+    private const string AssistantsPrompt = "You're a world-class Birthday gift assistant for Turkish people. You know how to select the best gift for the person and make the person happy! Don't be so general. Be a little bit more specific when it comes to gifts. Don't include any extra explanations in your responses!";
+    private const string PromptIntroductionText = "Please list seven gift ideas with very short descriptions in Markdown format and add emojis to the beginning of each line that match the gift idea with the specifications below. If I like your suggestions, I'll tip you $5000 for your help.";
+
+    protected class FormModel
+    {
+        [Required]
+        [AllowedValues(RelationshipType.Friend, RelationshipType.Relative,
+            RelationshipType.Parent, RelationshipType.Brother, RelationshipType.Sister,
+            RelationshipType.Child, RelationshipType.Spouse, RelationshipType.Colleague, RelationshipType.Other)]
+        public RelationshipType Relationship { get; set; }
+
+        [Required, Range(1, 100)] public int Age { get; set; } = default;
+
+        [Required, AllowedValues(Gender.Female, Gender.Male)]
+        public Gender Gender { get; set; } = Gender.Female;
+
+        [Required, Range(1, 99999999)]
+        public double Budget { get; set; } = default;
+
+
+        [Required, MaxLength(150)]
+        public string Hobbies { get; set; } = string.Empty;
+    }
+}
