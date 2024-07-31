@@ -13,9 +13,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VideoTranscriberApp", "Vide
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BG.VideoTranscriberApp.ConsoelClient", "BG.VideoTranscriberApp.ConsoelClient\BG.VideoTranscriberApp.ConsoelClient.csproj", "{885CDC3A-97EA-4B3D-B83F-7BB8FF5698D4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BG.VideoTranscriberApp.BlazorUI", "BG.VideoTranscriberApp.BlazorUI\BG.VideoTranscriberApp.BlazorUI\BG.VideoTranscriberApp.BlazorUI.csproj", "{CC8EA09C-031A-4B31-9592-72C3219754C8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BG.VideoTranscriberApp.BlazorUI", "BG.VideoTranscriberApp.BlazorUI\BG.VideoTranscriberApp.BlazorUI\BG.VideoTranscriberApp.BlazorUI.csproj", "{CC8EA09C-031A-4B31-9592-72C3219754C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BG.VideoTranscriberApp.BlazorUI.Client", "BG.VideoTranscriberApp.BlazorUI\BG.VideoTranscriberApp.BlazorUI.Client\BG.VideoTranscriberApp.BlazorUI.Client.csproj", "{C05CCD26-8956-4259-9E54-840C3EE76581}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BG.VideoTranscriberApp.BlazorUI.Client", "BG.VideoTranscriberApp.BlazorUI\BG.VideoTranscriberApp.BlazorUI.Client\BG.VideoTranscriberApp.BlazorUI.Client.csproj", "{C05CCD26-8956-4259-9E54-840C3EE76581}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
