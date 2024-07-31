@@ -1,4 +1,6 @@
 using BG.VideoTranscriberApp.BlazorUI.Components;
+using BG.VideoTranscriberApp.BlazorUI.Services;
+using BlazorDownloadFile;
 using OpenAI.Extensions;
 
 
@@ -17,8 +19,10 @@ var openAIApiKey = builder
     .Configuration
     .GetSection("OpenAIApiKey")
     .Value;
-
+builder.Services.AddBlazorDownloadFile(ServiceLifetime.Scoped);
 builder.Services.AddOpenAIService(settings => settings.ApiKey = openAIApiKey);
+
+builder.Services.AddScoped<TranscriptionManager>();
 
 var app = builder.Build();
 

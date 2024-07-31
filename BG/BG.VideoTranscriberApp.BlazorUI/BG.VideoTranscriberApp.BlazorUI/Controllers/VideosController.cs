@@ -1,9 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BG.VideoTranscriberApp.BlazorUI.Client.Models;
+using Microsoft.AspNetCore.Mvc;
 using OpenAI.Interfaces;
 using OpenAI.ObjectModels;
 using OpenAI.ObjectModels.RequestModels;
 using Xabe.FFmpeg;
-using BG.VideoTranscriberApp.BlazorUI.Models;
 
 namespace BG.VideoTranscriberApp.BlazorUI.Controllers
 {
