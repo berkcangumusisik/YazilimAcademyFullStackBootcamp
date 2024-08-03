@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PasswordStorageApp.WebApi.Dtos;
+using PasswordStorageApp.WebApi.Models;
 using PasswordStorageApp.WebApi.Persistence;
 
 namespace PasswordStorageApp.WebApi.Controllers
@@ -14,6 +16,27 @@ namespace PasswordStorageApp.WebApi.Controllers
         {
             var accounts = FakdeDbContext.Accounts.ToList();
             return Ok(accounts);
+        }
+        [HttpPost]
+        public IActionResult Create(AccountCreateDto newAccount)
+        {
+           var account = newAccount.ToAccount();
+           FakdeDbContext.Accounts.Add(account);
+           return Ok(new { data = account.Id, message = "The account was added successfully" });
+        }
+
+        [HttpPut("{id:guid}")]
+        public IActionResult Update(Guid id, AccountUpdateDto updateDto)
+        {
+            if(id != updateDto.Id)
+            {
+                return BadRequest("The id in the url does not match the id in the body");
+            }
+            var account = FakdeDbContext.Accounts.FirstOrDefault(ac => ac.Id == id);
+            var updatedAccount = updateDto.ToAccount(account);
+            var index = FakdeDbContext.Accounts.FindIndex(ac => ac.Id == id);
+            FakdeDbContext.Accounts[index] = updatedAccount;
+            return Ok(new { data = account.Id, message = "The account was uptaded successfully" });
         }
 
         [HttpGet("{id:guid}")] 
