@@ -1,4 +1,4 @@
-﻿namespace PasswordStorageApp.WebApi.Enums;
+﻿namespace PasswordStorageApp.Domain.Enums;
 
 public enum AccountType
 {

@@ -1,6 +1,6 @@
-﻿using PasswordStorageApp.WebApi.Enums;
+﻿using PasswordStorageApp.Domain.Enums;
 
-namespace PasswordStorageApp.WebApi.Models
+namespace PasswordStorageApp.Domain.Models
 {
     public class Account
     {

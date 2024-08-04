@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PasswordStorageApp.WebApi.Dtos;
-using PasswordStorageApp.WebApi.Models;
+using Microsoft.EntityFrameworkCore;
+using PasswordStorageApp.Domain.Dtos;
 using PasswordStorageApp.WebApi.Persistence;
+using PasswordStorageApp.WebApi.Persistence.Contexts;
 
 namespace PasswordStorageApp.WebApi.Controllers
 {
@@ -10,39 +11,44 @@ namespace PasswordStorageApp.WebApi.Controllers
     [ApiController]
     public class AccountsController : ControllerBase
     {
+        private readonly ApplicationDbContext _dbContext;
+        public AccountsController(ApplicationDbContext dbContext)
+        {
+            _dbContext = dbContext;
+        }
 
         [HttpGet] 
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
         {
-            var accounts = FakdeDbContext.Accounts.ToList();
+            var accounts = await _dbContext.Accounts.AsNoTracking().ToListAsync(cancellationToken); // AsNoTracking() metodu veritabanından veri çekerken veriyi takip etmemizi sağlar.
             return Ok(accounts);
         }
         [HttpPost]
-        public IActionResult Create(AccountCreateDto newAccount)
+        public async Task<IActionResult> CreateAsync(AccountCreateDto newAccount, CancellationToken cancellationToken)
         {
            var account = newAccount.ToAccount();
-           FakdeDbContext.Accounts.Add(account);
+           _dbContext.Accounts.Add(account);
+           await _dbContext.SaveChangesAsync(cancellationToken);
            return Ok(new { data = account.Id, message = "The account was added successfully" });
         }
 
         [HttpPut("{id:guid}")]
-        public IActionResult Update(Guid id, AccountUpdateDto updateDto)
+        public async Task<IActionResult> UpdateAsync(Guid id, AccountUpdateDto updateDto, CancellationToken cancellationToken)
         {
             if(id != updateDto.Id)
             {
                 return BadRequest("The id in the url does not match the id in the body");
             }
-            var account = FakdeDbContext.Accounts.FirstOrDefault(ac => ac.Id == id);
+            var account = _dbContext.Accounts.FirstOrDefault(ac => ac.Id == id);
             var updatedAccount = updateDto.ToAccount(account);
-            var index = FakdeDbContext.Accounts.FindIndex(ac => ac.Id == id);
-            FakdeDbContext.Accounts[index] = updatedAccount;
-            return Ok(new { data = account.Id, message = "The account was uptaded successfully" });
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            return Ok(new { data = updatedAccount, message = "The account was uptaded successfully" });
         }
 
         [HttpGet("{id:guid}")] 
-        public IActionResult GetById(Guid id)
+        public async Task<IActionResult> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            var account = FakdeDbContext.Accounts.FirstOrDefault(ac => ac.Id == id);
+            var account = await _dbContext.Accounts.AsNoTracking().FirstOrDefaultAsync(ac => ac.Id == id, cancellationToken);
             if (account is null)
             {
                 return NotFound();
@@ -51,19 +57,20 @@ namespace PasswordStorageApp.WebApi.Controllers
         }
 
         [HttpDelete("{id:guid}")]
-        public IActionResult Remove(Guid id)
+        public async Task<IActionResult> RemoveAsync(Guid id, CancellationToken cancellationToken)
         {
             if(id == Guid.Empty)
             {
                 return BadRequest("id is not valid. Please do not send empty guids for god sake!");
             }
 
-            var account = FakdeDbContext.Accounts.FirstOrDefault(ac => ac.Id == id);
+            var account = _dbContext.Accounts.FirstOrDefault(ac => ac.Id == id);
             if (account is null)
             {
                 return NotFound();
             }
-            FakdeDbContext.Accounts.Remove(account);
+            _dbContext.Accounts.Remove(account);
+            await _dbContext.SaveChangesAsync(cancellationToken);
             return NoContent();
         }
     }

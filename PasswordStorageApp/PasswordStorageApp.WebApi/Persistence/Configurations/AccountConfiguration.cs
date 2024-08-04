@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using PasswordStorageApp.WebApi.Enums;
-using PasswordStorageApp.WebApi.Models;
+using PasswordStorageApp.Domain.Enums;
+using PasswordStorageApp.Domain.Models;
 
 namespace PasswordStorageApp.WebApi.Persistence.Configurations
 {
@@ -25,10 +25,10 @@ namespace PasswordStorageApp.WebApi.Persistence.Configurations
             builder.Property(x => x.Type).HasConversion<int>().HasDefaultValue(AccountType.Web).IsRequired(); //.HasConversion ile enum'un int'e çevrildiği belirtilir. .HasDefaultValue ile alanın varsayılan değeri belirtilir.
 
             // CreatedOn
-            builder.Property(x => x.CreatedOn).IsRequired(false); 
+            builder.Property(x => x.CreatedOn).IsRequired(); 
 
             // ModifiedOn
-            builder.Property(x => x.ModifiedOn); 
+            builder.Property(x => x.ModifiedOn).IsRequired(false); 
 
             // Table Name
             builder.ToTable("Accounts"); //.ToTable ile tablo adı belirtilir.
