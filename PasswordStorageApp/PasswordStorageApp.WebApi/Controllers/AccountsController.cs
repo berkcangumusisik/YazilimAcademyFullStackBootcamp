@@ -68,3 +68,9 @@ namespace PasswordStorageApp.WebApi.Controllers
         }
     }
 }
+
+/*
+ * ORM : Object Relational Mapping (Yazılım nesneleri ile veritabanı arasında bir eşleme yapar)
+ * ORM bulunduğu dildeki veriyi bir veri tabanı ile ilişkilendirir.
+ * 
+ */
