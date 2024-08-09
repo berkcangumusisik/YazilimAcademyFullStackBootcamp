@@ -20,7 +20,12 @@ namespace PasswordStorageApp.WebApi.Controllers
         [HttpGet] 
         public async Task<IActionResult> GetAllAsync(CancellationToken cancellationToken)
         {
-            var accounts = await _dbContext.Accounts.AsNoTracking().ToListAsync(cancellationToken); // AsNoTracking() metodu veritabanından veri çekerken veriyi takip etmemizi sağlar.
+            var accounts = await _dbContext
+                .Accounts
+                .AsNoTracking()
+                .Select(ac => AccountGetAllDto.MapFromAccount(ac))
+                .ToListAsync(cancellationToken);
+            // AsNoTracking() metodu veritabanından veri çekerken veriyi takip etmemizi sağlar.
             return Ok(accounts);
         }
         [HttpPost]
