@@ -1,9 +1,11 @@
 ﻿@page "/accounts/add"
+@using System.Net
 @using PasswordStorageApp.Domain.Dtos
 @using PasswordStorageApp.Domain.Enums
 @inject DialogService DialogService
 @inject HttpClient HttpClient
-@inject NotificationService NotificationService
+@inject IToastService ToastService
+@inject NavigationManager Navigation
 
 <RadzenTemplateForm Data="@createDto" Submit="@((AccountCreateDto args) => SubmitAsync(args))">
     <RadzenRow Gap="2rem" class="rz-p-0 rz-p-lg-4">
@@ -59,18 +61,32 @@
 
         if (response.IsSuccessStatusCode)
         {
-            NotificationService.Notify(NotificationSeverity.Success, "Hesap Eklendi", "Hesap başarıyla eklendi.");
+            ToastService.Success( "Hesap başarıyla eklendi.","Hesap Eklendi");
 
-            DialogService.Close(true);
+            if(IsDialog)
+                DialogService.Close(true);
+            else
+                Navigation.NavigateTo("/accounts"); 
         }
         else
         {
-            NotificationService.Notify(NotificationSeverity.Error, "Hata", "Hesap eklenirken bir hata oluştu.");
+            if(response.StatusCode == HttpStatusCode.BadRequest || response.StatusCode == HttpStatusCode.NotFound)
+                {
+                ToastService.Warning( "Bir hata oluştu. Lütfen daha sonra tekrar deneyiniz.","Uyarı");
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                ToastService.Error( "Hesap eklenirken sunucuda bir hata oluştu.","Hata");
+            }
         }
     }
 
     private void Cancel()
     {
-        DialogService.Close();
+        if(IsDialog)
+            DialogService.Close(false);
+        else
+            Navigation.NavigateTo("/accounts");
     }
 }

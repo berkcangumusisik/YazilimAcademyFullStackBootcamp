@@ -28,12 +28,16 @@ namespace PasswordStorageApp.WebApi.Controllers
             // AsNoTracking() metodu veritabanından veri çekerken veriyi takip etmemizi sağlar.
             return Ok(accounts);
         }
+
         [HttpPost]
         public async Task<IActionResult> CreateAsync(AccountCreateDto newAccount, CancellationToken cancellationToken)
         {
            var account = newAccount.ToAccount();
+
            _dbContext.Accounts.Add(account);
+
            await _dbContext.SaveChangesAsync(cancellationToken);
+
            return Ok(new { data = account.Id, message = "The account was added successfully" });
         }
 
@@ -58,7 +62,7 @@ namespace PasswordStorageApp.WebApi.Controllers
             {
                 return NotFound();
             }
-            return Ok(account);
+            return Ok(AccountGetByIdDto.MapFromAccount(account));
         }
 
         [HttpDelete("{id:guid}")]
