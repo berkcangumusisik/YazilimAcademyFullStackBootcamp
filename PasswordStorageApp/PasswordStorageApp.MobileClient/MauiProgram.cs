@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
+using PasswordStorageApp.MobileClient.Services;
+using Radzen;
 
 namespace PasswordStorageApp.MobileClient
 {
@@ -19,6 +21,12 @@ namespace PasswordStorageApp.MobileClient
 #if DEBUG
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
+            builder.Services.AddRadzenComponents();
+
+            builder.Services.AddScoped<IToastService, RadzenToastManager>();
+            builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://csharpjavadandahaiyi.tailwindcomponents.io/api/") });
+
+
 #endif
 
             return builder.Build();
