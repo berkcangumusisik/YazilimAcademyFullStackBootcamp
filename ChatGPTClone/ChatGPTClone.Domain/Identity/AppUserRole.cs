@@ -5,9 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChatGPTClone.Domain.Identity
+namespace ChatGPTClone.Domain.Identity;
+
+public class AppUserRole : IdentityUserRole<Guid>
 {
-    public class UserRole : IdentityUserRole<Guid>
-    {
-    }
 }

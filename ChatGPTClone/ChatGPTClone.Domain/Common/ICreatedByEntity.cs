@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChatGPTClone.Domain.Common
+namespace ChatGPTClone.Domain.Common;
+
+public interface ICreatedByEntity
 {
-    public interface ICreatedByEntity
-    {
-        DateTimeOffset CreatedOn { get; set; }
-        string CreatedByUserId { get; set; }
-    }
+    DateTimeOffset CreatedOn { get; set; }
+    string CreatedByUserId { get; set; }
 }

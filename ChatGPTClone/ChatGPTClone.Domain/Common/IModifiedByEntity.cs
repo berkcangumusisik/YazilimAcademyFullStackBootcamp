@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChatGPTClone.Domain.Common
+namespace ChatGPTClone.Domain.Common;
+
+public interface IModifiedByEntity
 {
-    public interface IModifiedByEntity
-    {
-        DateTimeOffset? ModifiedOn { get; set; }
-        string ModifiedByUserId { get; set; }
-    }
+    DateTimeOffset? ModifiedOn { get; set; }
+    string ModifiedByUserId { get; set; }
 }
