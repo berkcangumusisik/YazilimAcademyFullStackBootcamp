@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
-namespace ChatGPTClone.Domain.Identity;
+namespace ChatGPTClone.Infrastructure.Identity;
 
 public class Role: IdentityRole<Guid>
 {
