@@ -34,5 +34,8 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
         builder.HasMany<RoleClaim>().WithOne().HasForeignKey(rc => rc.RoleId).IsRequired();
 
         builder.ToTable("Roles");
+
+
+        
     }
 }
