@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ChatGPTClone.Application.Common.Interfaces;
+﻿using ChatGPTClone.Application.Common.Interfaces;
+using ChatGPTClone.Application.Common.Models.General;
 using MediatR;
 
 namespace ChatGPTClone.Application.Features.ChatSessions.Commands.Create
 {
-    public class ChatSessionCreateCommandHandler : IRequestHandler<ChatSessionCreateCommand, Guid>
+    public class ChatSessionCreateCommandHandler : IRequestHandler<ChatSessionCreateCommand, ResponseDto<Guid>>
     {
         private readonly IApplicationDbContext _context;
         private readonly ICurrentUserService _currentUserService;
@@ -19,7 +15,7 @@ namespace ChatGPTClone.Application.Features.ChatSessions.Commands.Create
             _currentUserService = currentUserService;
         }
 
-        public async Task<Guid> Handle(ChatSessionCreateCommand request, CancellationToken cancellationToken)
+        public async Task<ResponseDto<Guid>> Handle(ChatSessionCreateCommand request, CancellationToken cancellationToken)
         {
             var chatSession = request.ToChatSession(_currentUserService.UserId);
 
@@ -29,7 +25,7 @@ namespace ChatGPTClone.Application.Features.ChatSessions.Commands.Create
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return chatSession.Id;
+            return new ResponseDto<Guid>(chatSession.Id, "A new chat session was created successfully.");
         }
     }
 }
