@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace ChatGPTClone.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class SeedingInitialUser : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -187,6 +187,11 @@ namespace ChatGPTClone.Infrastructure.Persistence.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.InsertData(
+                table: "Users",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "CreatedByUserId", "CreatedOn", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "ModifiedByUserId", "ModifiedOn", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { new Guid("2798212b-3e5d-4556-8629-a64eb70da4a8"), 0, "286d8364-61e8-4c57-9433-bc32c8376920", "2798212b-3e5d-4556-8629-a64eb70da4a8", new DateTimeOffset(new DateTime(2024, 8, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 3, 0, 0, 0)), "berkcan@gmail.com", true, "Berkcan", "Gümüşışık", false, null, null, null, "BERKCAN@GMAIL.COM", "BERKCAN", "AQAAAAIAAYagAAAAEMMYDpVsXA8ctfWIqNRE6G7HTigu1Wx1Etod6C4/mqbgmWIPaLY2J5mRVo2UvwMxzA==", null, false, "8cba647d-f06a-4a62-9e4a-9e01cbc18953", false, "Berkcan" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChatSessions_AppUserId",

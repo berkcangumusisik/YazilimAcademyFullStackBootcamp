@@ -158,6 +158,28 @@ namespace ChatGPTClone.Infrastructure.Persistence.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("Users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("2798212b-3e5d-4556-8629-a64eb70da4a8"),
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "286d8364-61e8-4c57-9433-bc32c8376920",
+                            CreatedByUserId = "2798212b-3e5d-4556-8629-a64eb70da4a8",
+                            CreatedOn = new DateTimeOffset(new DateTime(2024, 8, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 3, 0, 0, 0)),
+                            Email = "berkcan@gmail.com",
+                            EmailConfirmed = true,
+                            FirstName = "Berkcan",
+                            LastName = "Gümüşışık",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "BERKCAN@GMAIL.COM",
+                            NormalizedUserName = "BERKCAN",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMMYDpVsXA8ctfWIqNRE6G7HTigu1Wx1Etod6C4/mqbgmWIPaLY2J5mRVo2UvwMxzA==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "8cba647d-f06a-4a62-9e4a-9e01cbc18953",
+                            TwoFactorEnabled = false,
+                            UserName = "Berkcan"
+                        });
                 });
 
             modelBuilder.Entity("ChatGPTClone.Infrastructure.Identity.AppUserClaim", b =>
