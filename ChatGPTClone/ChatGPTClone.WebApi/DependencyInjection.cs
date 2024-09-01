@@ -1,6 +1,5 @@
 ﻿using System.Globalization;
 using ChatGPTClone.Application.Common.Interfaces;
-using ChatGPTClone.Infrastructure.Persistence.Contexts;
 using ChatGPTClone.WebApi.Services;
 using Microsoft.AspNetCore.Localization;
 
@@ -11,24 +10,27 @@ namespace ChatGPTClone.WebApi
         public static IServiceCollection AddWebApi(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddHttpContextAccessor();
+
             services.AddScoped<ICurrentUserService, CurrentUserManager>();
 
             //Localization
             services.AddLocalization(options => options.ResourcesPath = "Resources");
+
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                // Set the default culture : Uygulamada dil belirtilmemişse varsayılan olarak kullanılacak dil
-                var defaultCulture = new CultureInfo("tr-Tr");
+                // Set the default culture
 
+                var defaultCulture = new CultureInfo("tr-TR");
 
-                // Set the supported cultures
+                // Set supported cultures
+
                 var supportedCultures = new List<CultureInfo>
                 {
                     defaultCulture,
                     new CultureInfo("en-GB")
                 };
 
-                //Add supported cultures 
+                // Add supported cultures
                 options.DefaultRequestCulture = new RequestCulture(defaultCulture);
 
                 options.SupportedCultures = supportedCultures;
@@ -37,7 +39,6 @@ namespace ChatGPTClone.WebApi
 
                 options.ApplyCurrentCultureToResponseHeaders = true;
             });
-
 
             return services;
         }

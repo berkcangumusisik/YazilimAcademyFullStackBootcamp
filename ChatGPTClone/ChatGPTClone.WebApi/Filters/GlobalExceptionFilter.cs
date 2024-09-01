@@ -19,7 +19,6 @@ public class GlobalExceptionFilter : IExceptionFilter
         _localizer = localizer;
     }
 
-
     public void OnException(ExceptionContext context)
     {
         _logger.LogError(context.Exception, context.Exception.Message);
@@ -29,6 +28,7 @@ public class GlobalExceptionFilter : IExceptionFilter
         // Eğer hata bir doğrulama hatası ise
         if (context.Exception is ValidationException validationException)
         {
+
             var responseMessage = _localizer[CommonLocalizationKeys.GeneralValidationException];
 
             var errors = validationException.Errors
@@ -45,7 +45,7 @@ public class GlobalExceptionFilter : IExceptionFilter
         else
         {
             // Diğer tüm hatalar için 500 - Internal Server Error
-            context.Result = new ObjectResult(new ResponseDto<string>(CommonLocalizationKeys.GeneralInternalServerException, false))
+            context.Result = new ObjectResult(new ResponseDto<string>(_localizer[CommonLocalizationKeys.GeneralInternalServerException], false))
             {
                 StatusCode = StatusCodes.Status500InternalServerError
             };

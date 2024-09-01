@@ -107,7 +107,7 @@
     <value>{0} is required.</value>
   </data>
   <data name="ValidationIsInvalid" xml:space="preserve">
-    <value>{0} is invalid.  </value>
+    <value>{0} is invalid.</value>
   </data>
   <data name="ValidationMustBeBetween" xml:space="preserve">
     <value>{0} must be between {1} and {2} characters.</value>

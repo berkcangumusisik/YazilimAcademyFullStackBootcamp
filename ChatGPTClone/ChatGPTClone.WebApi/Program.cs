@@ -47,8 +47,10 @@ try
         app.UseSwagger();
         app.UseSwaggerUI();
     }
+
     var requestLocalizationOptions = app.Services
         .GetRequiredService<IOptions<RequestLocalizationOptions>>().Value;
+
     app.UseRequestLocalization(requestLocalizationOptions);
 
     app.UseHttpsRedirection();
