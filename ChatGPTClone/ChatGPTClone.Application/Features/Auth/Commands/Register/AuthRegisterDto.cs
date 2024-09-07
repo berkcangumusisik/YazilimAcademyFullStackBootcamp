@@ -1,26 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ChatGPTClone.Application.Common.Models.Identity;
 
-namespace ChatGPTClone.Application.Features.Auth.Commands.Register
+namespace ChatGPTClone.Application.Features.Auth.Commands.Register;
+
+public class AuthRegisterDto
 {
-    public class AuthRegisterDto
+    public Guid UserId { get; set; }
+
+    public string EmailToken { get; set; }
+
+
+    public AuthRegisterDto(Guid userId, string emailToken)
     {
-        public Guid Id { get; set; }
-        public string EmailToken { get; set; }
+        UserId = userId;
+        EmailToken = emailToken;
+    }
 
-        public AuthRegisterDto(Guid id, string emailToken)
-        {
-            Id = id;
-            EmailToken = emailToken;
-        }
-
-        public static AuthRegisterDto Create(IdentityRegisterResponse response)
-        {
-            return new AuthRegisterDto(response.Id, response.EmailToken);
-        }
+    public static AuthRegisterDto Create(IdentityRegisterResponse response)
+    {
+        return new AuthRegisterDto(response.Id, response.EmailToken);
     }
 }

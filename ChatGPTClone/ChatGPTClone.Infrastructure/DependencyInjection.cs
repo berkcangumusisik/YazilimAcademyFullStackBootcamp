@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Resend;
 
 namespace ChatGPTClone.Infrastructure
 {
@@ -32,19 +33,30 @@ namespace ChatGPTClone.Infrastructure
 
             services.AddScoped<IIdentityService, IdentityManager>();
 
+            services.AddScoped<IEmailService, ResendEmailManager>();
+
             services.AddIdentity<AppUser, Role>(options =>
-                {
-                    options.User.RequireUniqueEmail = true;
+            {
+                options.User.RequireUniqueEmail = true;
 
-                    options.Password.RequireNonAlphanumeric = false;
-                    options.Password.RequireUppercase = false;
-                    options.Password.RequireLowercase = false;
-                    options.Password.RequireDigit = false;
-                    options.Password.RequiredLength = 6;
-                    options.Password.RequiredUniqueChars = 0;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireLowercase = false;
+                options.Password.RequireDigit = false;
+                options.Password.RequiredUniqueChars = 0;
+                options.Password.RequiredLength = 6;
+            })
+            .AddEntityFrameworkStores<ApplicationDbContext>()
+            .AddDefaultTokenProviders();
 
-                }).AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+            // Resend
+            services.AddOptions();
+
+            services.AddHttpClient<ResendClient>();
+
+            services.Configure<ResendClientOptions>(o => o.ApiToken = configuration.GetSection("ResendApiKey").Value!);
+
+            services.AddTransient<IResend, ResendClient>();
 
             return services;
         }
