@@ -1,9 +1,7 @@
 using ChatGPTClone.Application;
-using ChatGPTClone.Application.Common.Interfaces;
 using ChatGPTClone.Infrastructure;
 using ChatGPTClone.WebApi;
 using ChatGPTClone.WebApi.Filters;
-using ChatGPTClone.WebApi.Services;
 using Microsoft.Extensions.Options;
 using Serilog;
 
@@ -23,7 +21,7 @@ try
 
     // Add services to the container.
 
-    // Controller'larý servis olarak ekle
+    // Controller'larÄ± servis olarak ekle
     builder.Services.AddControllers(opt =>
     {
         // Global exception filtresini ekle
@@ -42,6 +40,8 @@ try
     builder.Services.AddWebApi(builder.Configuration, builder.Environment);
 
     var app = builder.Build();
+
+    app.UseCors("AllowAll");
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())

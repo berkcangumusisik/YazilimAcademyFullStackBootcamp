@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using ChatGPTClone.Application.Common.Interfaces;
 using ChatGPTClone.WebApi.Services;
@@ -14,6 +13,18 @@ namespace ChatGPTClone.WebApi
     {
         public static IServiceCollection AddWebApi(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
+            // Tuna bozmasin diye buraya yazdim.
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll",
+                    builder => builder
+                        .AllowAnyMethod()
+                        .AllowCredentials()
+                        .SetIsOriginAllowed((host) => true)
+                        .AllowAnyHeader());
+            });
+
             services.AddHttpContextAccessor();
 
             services.AddScoped<ICurrentUserService, CurrentUserManager>();
@@ -48,32 +59,32 @@ namespace ChatGPTClone.WebApi
             });
 
             services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(options =>
-                {
-                    var secretKey = configuration["JwtSettings:SecretKey"];
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignInScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultForbidScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                var secretKey = configuration["JwtSettings:SecretKey"];
 
-                    if (string.IsNullOrEmpty(secretKey))
-                        throw new ArgumentNullException("JwtSettings:SecretKey is not set.");
+                if (string.IsNullOrEmpty(secretKey))
+                    throw new ArgumentNullException("JwtSettings:SecretKey is not set.");
 
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateLifetime = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidIssuer = configuration["JwtSettings:Issuer"],
-                        ValidAudience = configuration["JwtSettings:Audience"],
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
-                        ClockSkew = TimeSpan.Zero
-                    };
-                });
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = configuration["JwtSettings:Issuer"],
+                    ValidAudience = configuration["JwtSettings:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey)),
+                    ClockSkew = TimeSpan.Zero
+                };
+            });
 
             services.AddSwaggerGen(setupAction =>
             {
@@ -87,11 +98,15 @@ namespace ChatGPTClone.WebApi
                         Description = "Through this API you can access ChatGPTClone App's details",
                         Contact = new OpenApiContact()
                         {
-                            Email = "gumusisikberkcan@gmail.com",
-                            Name = "Berkcan Gümüşışık",
+                            Email = "berkcan.gumusisik@yazilim.academy",
+                            Name = "Alper Tunga",
                             Url = new Uri("https://yazilim.academy/")
                         },
-                        
+                        License = new OpenApiLicense()
+                        {
+                            Name = "© 2024 Yazılım Academy Tüm Hakları Saklıdır",
+                            Url = new Uri("https://yazilim.academy/")
+                        }
                     });
 
                 setupAction.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
@@ -118,9 +133,8 @@ namespace ChatGPTClone.WebApi
                     },
                 });
             });
+
             return services;
         }
     }
 }
-
-// Dependency Inversion Principle (DIP) - Bağımlılıkların tersine çevrilmesi prensibi : Bağımlılıkların yüksek seviyeli modüllerden düşük seviyeli modüllere doğru olması gerektiğini belirtir. Yani yüksek seviyeli modüller düşük seviyeli modüllere bağımlı olmamalıdır. Her ikisi de soyutlamalara bağlı olmalıdır. Soyutlamalar detaylara bağlı olmamalıdır. Detaylar soyutlamalara bağlı olmalıdır.

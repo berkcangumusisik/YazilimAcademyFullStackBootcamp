@@ -3,6 +3,7 @@
 public enum GptModelType
 {
     GPT4o = 1,
-    GPToMini = 2,
+    GPT4oMini = 2,
     GPT4 = 3,
+    
 }

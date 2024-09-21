@@ -45,8 +45,17 @@ public class IdentityManager : IIdentityService
     public Task<bool> CheckIfEmailVerifiedAsync(string email, CancellationToken cancellationToken)
     {
         return _userManager
-            .Users
-            .AnyAsync(x => x.Email == email && x.EmailConfirmed, cancellationToken);
+        .Users
+        .AnyAsync(x => x.Email == email && x.EmailConfirmed, cancellationToken);
+    }
+
+    public async Task<IdentityCreateEmailTokenResponse> CreateEmailTokenAsync(IdentityCreateEmailTokenRequest request, CancellationToken cancellationToken)
+    {
+        var user = await _userManager.FindByEmailAsync(request.Email);
+
+        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+
+        return new IdentityCreateEmailTokenResponse(token);
     }
 
     // Kullanıcının giriş yapmasını sağlar.
@@ -66,30 +75,6 @@ public class IdentityManager : IIdentityService
 
         // Giriş yanıtını döndür.
         return new IdentityLoginResponse(jwtResponse.Token, jwtResponse.ExpiresAt);
-    }
-
-    public async Task<IdentityVerifyEmailResponse> VerifyEmailAsync(IdentityVerifyEmailRequest request, CancellationToken cancellationToken)
-    {
-        var user = await _userManager.FindByEmailAsync(request.Email);
-
-        var decodedToken = HttpUtility.UrlDecode(request.Token);
-
-        var result = await _userManager.ConfirmEmailAsync(user, decodedToken);
-
-        if (!result.Succeeded)
-            CreateAndThrowValidationException(result.Errors);
-
-        return new IdentityVerifyEmailResponse(user.Email);
-
-    }
-
-    public async Task<IdentityCreateEmailTokenResponse> CreateEmailTokenAsync(IdentityCreateEmailTokenRequest request, CancellationToken cancellationToken)
-    {
-        var user = await _userManager.FindByEmailAsync(request.Email);
-
-        var token = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-        return new IdentityCreateEmailTokenResponse(token);
     }
 
     // Yeni bir kullanıcı kaydeder.
@@ -124,6 +109,20 @@ public class IdentityManager : IIdentityService
 
         // Kayıt yanıtını döndür.
         return new IdentityRegisterResponse(userId, user.Email, emailToken);
+    }
+
+    public async Task<IdentityVerifyEmailResponse> VerifyEmailAsync(IdentityVerifyEmailRequest request, CancellationToken cancellationToken)
+    {
+        var user = await _userManager.FindByEmailAsync(request.Email);
+
+        // var decodedToken = HttpUtility.UrlDecode(request.Token);
+
+        var result = await _userManager.ConfirmEmailAsync(user, request.Token);
+
+        if (!result.Succeeded)
+            CreateAndThrowValidationException(result.Errors);
+
+        return new IdentityVerifyEmailResponse(user.Email);
     }
 
     // Doğrulama hatası oluşturur ve fırlatır.

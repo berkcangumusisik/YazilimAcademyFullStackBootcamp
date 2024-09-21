@@ -1,5 +1,4 @@
-﻿using System.Net.Mail;
-using System.Web;
+﻿using System.Web;
 using ChatGPTClone.Application.Common.Interfaces;
 using ChatGPTClone.Application.Common.Models.Email;
 using Resend;
@@ -36,13 +35,13 @@ public class ResendEmailManager : IEmailService
 
         var token = HttpUtility.UrlEncode(emailVerificationDto.Token);
 
-        var emailVerificationUrl = $"http://localhost:5086/auth/verify-email?email={emailVerificationDto.Email}&token={token}";
+        var emailVerificationUrl = $"http://localhost:5253/auth/verify-email?email={emailVerificationDto.Email}&token={token}";
 
         html = html.Replace("{{verifyButtonLink}}", emailVerificationUrl);
 
 
         var message = new EmailMessage();
-        message.From = "onboarding@resend.dev";
+        message.From = "noreply@yazilim.academy";
         message.To.Add(emailVerificationDto.Email);
         message.Subject = emailTitle;
         message.HtmlBody = html;
