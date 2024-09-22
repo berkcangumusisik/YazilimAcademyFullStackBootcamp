@@ -13,8 +13,10 @@ namespace ChatGPTClone.WebApi
     {
         public static IServiceCollection AddWebApi(this IServiceCollection services, IConfiguration configuration, IWebHostEnvironment environment)
         {
-            // Tuna bozmasin diye buraya yazdim.
+            // Bellek önbelleğini ekler
+            services.AddMemoryCache(); 
 
+            // CORS politikasını yapılandırır
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll",
@@ -25,39 +27,38 @@ namespace ChatGPTClone.WebApi
                         .AllowAnyHeader());
             });
 
+            // HTTP bağlamı erişimcisini ekler
             services.AddHttpContextAccessor();
 
+            // Mevcut kullanıcı hizmetini ekler
             services.AddScoped<ICurrentUserService, CurrentUserManager>();
 
+            // Çevre yöneticisini ekler
             services.AddSingleton<IEnvironmentService, EnvironmentManager>(sp => new EnvironmentManager(environment.WebRootPath));
 
-            //Localization
+            // Yerelleştirme ayarları
             services.AddLocalization(options => options.ResourcesPath = "Resources");
 
             services.Configure<RequestLocalizationOptions>(options =>
             {
-                // Set the default culture
-
+                // Varsayılan kültürü ayarla
                 var defaultCulture = new CultureInfo("tr-TR");
 
-                // Set supported cultures
-
+                // Desteklenen kültürleri ayarla
                 var supportedCultures = new List<CultureInfo>
                 {
                     defaultCulture,
                     new CultureInfo("en-GB")
                 };
 
-                // Add supported cultures
+                // Desteklenen kültürleri ekle
                 options.DefaultRequestCulture = new RequestCulture(defaultCulture);
-
                 options.SupportedCultures = supportedCultures;
-
                 options.SupportedUICultures = supportedCultures;
-
                 options.ApplyCurrentCultureToResponseHeaders = true;
             });
 
+            // Kimlik doğrulama ayarları
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -86,9 +87,9 @@ namespace ChatGPTClone.WebApi
                 };
             });
 
+            // Swagger yapılandırması
             services.AddSwaggerGen(setupAction =>
             {
-
                 setupAction.SwaggerDoc(
                     "v1",
                     new OpenApiInfo()
@@ -111,6 +112,7 @@ namespace ChatGPTClone.WebApi
 
                 setupAction.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
 
+                // JWT kimlik doğrulama için güvenlik tanımı
                 setupAction.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Type = SecuritySchemeType.Http,
