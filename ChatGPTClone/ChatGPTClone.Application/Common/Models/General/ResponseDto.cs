@@ -8,7 +8,10 @@ namespace ChatGPTClone.Application.Common.Models.General
         public T Data { get; set; }
         public bool Success { get; set; } = true;
         public List<ErrorDto> Errors { get; set; } = [];
+        public ResponseDto()
+        {
 
+        }
         public ResponseDto(T data)
         {
             Data = data;
